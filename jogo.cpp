@@ -17,137 +17,125 @@ struct Pais {
     string bandeira;  
 };
 
+vector<Pais> carregarPaises() {
+    return {
+        {"Brasil", "America do Sul", "Portugues", "Brasilia", "Verde com losango amarelo e circulo azul"},
+        {"Japao", "Asia", "Japones", "Toquio", "Branco com circulo vermelho no centro"},
+        {"Franca", "Europa", "Frances", "Paris", "Tricolor vertical: azul, branco e vermelho"},
+        {"Canada", "America do Norte", "Ingles e Frances", "Ottawa", "Vermelha com folha de bordo no centro"},
+        {"Egito", "Africa", "Arabe", "Cairo", "Vermelha, branca e preta com aguia de Saladino"},
+        {"Australia", "Oceania", "Ingles", "Canberra", "Azul com Union Jack e estrelas brancas"},
+        {"India", "Asia", "Hindi e Ingles", "Nova Delhi", "Tricolor horizontal: acafrao, branco e verde com roda azul"},
+        {"Mexico", "America do Norte", "Espanhol", "Cidade do Mexico", "Tricolor vertical: verde, branco e vermelho com brasao"},
+        {"Italia", "Europa", "Italiano", "Roma", "Tricolor vertical: verde, branco e vermelho"},
+        {"Argentina", "America do Sul", "Espanhol", "Buenos Aires", "Azul claro e branco com sol no centro"}
+    };
+}
+
 void limparBuffer() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 void exibirIntroducao() {
-    cout << "🎯 Bem-vindo ao Jogo de Adivinhação de Países!" << endl;
-    cout << "=============================================" << endl;
-    cout << "Você receberá dicas sobre um país e deve adivinhar qual é." << endl;
-    cout << "Quanto menos tentativas você usar, maior será sua pontuação!" << endl << endl;
+    cout << "🎯 Bem-vindo ao Jogo de Adivinhacao de Paises!\n";
+    cout << "=============================================\n";
+    cout << "Voce recebera dicas sobre um pais e deve adivinhar qual e.\n";
+    cout << "Quanto menos tentativas voce usar, maior sera sua pontuacao!\n\n";
 }
 
 void exibirDica(const string& dica) {
-    cout << "\n🔍 Dica: " << dica << endl;
+    cout << "\n🔍 Dica: " << dica << "\n";
 }
 
 void exibirVitoria(int tentativas, const string& pais) {
-    cout << "\n🎉 Parabéns! Você acertou que o país é " << pais << " em " << tentativas << " tentativa(s)!" << endl;
-    
+    cout << "\n🎉 Parabens! Voce acertou que o pais e " << pais << " em " << tentativas << " tentativa(s)!\n";
+
     map<int, string> premios = {
         {1, "🏆 Medalha de Ouro em Geografia!"},
-        {2, "🏆 Medalha de Prata em Geografia!"},
-        {3, "🏆 Medalha de Bronze em Geografia!"},
-        {5, "🌟 Estrela de Geógrafo Novato!"}
+        {2, "🥈 Medalha de Prata em Geografia!"},
+        {3, "🥉 Medalha de Bronze em Geografia!"},
+        {5, "🌟 Estrela de Geografo Novato!"}
     };
-    
-    auto premio = premios.lower_bound(tentativas);
-    if (premio != premios.end()) {
-        cout << premio->second << endl;
+
+    auto it = premios.lower_bound(tentativas);
+    if (it != premios.end()) {
+        cout << it->second << "\n";
     }
 }
 
 void exibirDerrota(const string& pais) {
-    cout << "\n😢 Você não conseguiu adivinhar. O país era: " << pais << endl;
-    cout << "Não desista! Tente novamente para melhorar seu conhecimento geográfico." << endl;
+    cout << "\n😢 Voce nao conseguiu adivinhar. O pais era: " << pais << "\n";
+    cout << "Nao desista! Tente novamente para melhorar seu conhecimento geografico.\n";
 }
 
 bool verificarPalpite(const string& palpite, const string& resposta) {
-    string palpiteLower = palpite;
-    string respostaLower = resposta;
-    
-    transform(palpiteLower.begin(), palpiteLower.end(), palpiteLower.begin(), ::tolower);
-    transform(respostaLower.begin(), respostaLower.end(), respostaLower.begin(), ::tolower);
-    
-    return palpiteLower == respostaLower;
+    string p = palpite, r = resposta;
+    transform(p.begin(), p.end(), p.begin(), ::tolower);
+    transform(r.begin(), r.end(), r.begin(), ::tolower);
+    return p == r;
 }
 
-void jogarNovamente();
-
-void jogarJogo(const vector<Pais>& paises) {
-    int indice = rand() % paises.size();
-    Pais escolhido = paises[indice];
-
+bool jogarRodada(const Pais& pais) {
     vector<string> dicas = {
-        "Continente: " + escolhido.continente,
-        "Idioma(s) oficial(is): " + escolhido.idioma,
-        "Descrição da bandeira: " + escolhido.bandeira,
-        "Capital: " + escolhido.capital
+        "Continente: " + pais.continente,
+        "Idioma(s) oficial(is): " + pais.idioma,
+        "Descricao da bandeira: " + pais.bandeira,
+        "Capital: " + pais.capital
     };
 
     string palpite;
     int tentativas = 0;
-    bool acertou = false;
 
-    cout << "\n=== Novo Jogo ===" << endl;
-
-    for (size_t i = 0; i < dicas.size() && !acertou; i++) {
-        exibirDica(dicas[i]);
-        cout << "🌍 Qual é o país? ";
+    for (const auto& dica : dicas) {
+        exibirDica(dica);
+        cout << "🌍 Qual e o pais? ";
         getline(cin, palpite);
-
         tentativas++;
 
-        if (verificarPalpite(palpite, escolhido.nome)) {
-            exibirVitoria(tentativas, escolhido.nome);
-            acertou = true;
+        if (verificarPalpite(palpite, pais.nome)) {
+            exibirVitoria(tentativas, pais.nome);
+            return true;
         } else {
-            cout << "❌ Incorreto. ";
-            if (i < dicas.size() - 1) {
-                cout << "Aqui está outra dica..." << endl;
-            }
+            cout << "❌ Incorreto.";
+            if (tentativas < dicas.size()) cout << " Vamos tentar outra dica...\n";
         }
     }
 
-    if (!acertou) {
-        exibirDerrota(escolhido.nome);
-    }
-
-    jogarNovamente();
+    exibirDerrota(pais.nome);
+    return false;
 }
 
-void jogarNovamente() {
+bool desejaContinuar() {
     cout << "\nDeseja jogar novamente? (s/n): ";
-    char opcao;
-    cin >> opcao;
+    char resposta;
+    cin >> resposta;
     limparBuffer();
+    return tolower(resposta) == 's';
+}
 
-    if (tolower(opcao) == 's') {
-        jogarJogo({
-            {"Brasil", "América do Sul", "Português", "Brasília", "Verde com losango amarelo e círculo azul"},
-            {"Japão", "Ásia", "Japonês", "Tóquio", "Branco com círculo vermelho no centro"},
-            {"França", "Europa", "Francês", "Paris", "Tricolor vertical: azul, branco e vermelho"},
-            {"Canadá", "América do Norte", "Inglês e Francês", "Ottawa", "Vermelha com folha de bordo no centro"},
-            {"Egito", "África", "Árabe", "Cairo", "Vermelha, branca e preta com águia de Saladino"},
-            {"Austrália", "Oceania", "Inglês", "Canberra", "Azul com Union Jack e estrelas brancas"},
-            {"Índia", "Ásia", "Hindi e Inglês", "Nova Delhi", "Tricolor horizontal: açafrão, branco e verde com roda azul"},
-            {"México", "América do Norte", "Espanhol", "Cidade do México", "Tricolor vertical: verde, branco e vermelho com brasão"},
-            {"Itália", "Europa", "Italiano", "Roma", "Tricolor vertical: verde, branco e vermelho"},
-            {"Argentina", "América do Sul", "Espanhol", "Buenos Aires", "Azul claro e branco com sol no centro"}
-        });
-    } else {
-        cout << "\nObrigado por jogar! Até a próxima! 👋" << endl;
+void iniciarJogo(const vector<Pais>& paises) {
+    bool jogando = true;
+    while (jogando) {
+        cout << "\n=== NOVA RODADA ===\n";
+        Pais paisAleatorio = paises[rand() % paises.size()];
+        jogarRodada(paisAleatorio);
+        jogando = desejaContinuar();
     }
+
+    cout << "\nObrigado por jogar! Ate a proxima! 👋\n";
 }
 
 int main() {
 #ifdef _WIN32
-    system("chcp 65001 > nul"); // Terminal Windows em UTF-8
+    system("chcp 65001 > nul"); // Forca UTF-8 no terminal do Windows
 #endif
-    setlocale(LC_ALL, "pt_BR.UTF-8"); // Suporte a acentuação
-
-    srand(time(0));
+    setlocale(LC_ALL, "pt_BR.UTF-8");
+    srand(static_cast<unsigned>(time(0)));
 
     exibirIntroducao();
-    jogarJogo({
-        {"Brasil", "América do Sul", "Português", "Brasília", "Verde com losango amarelo e círculo azul"},
-        {"Japão", "Ásia", "Japonês", "Tóquio", "Branco com círculo vermelho no centro"},
-        {"França", "Europa", "Francês", "Paris", "Tricolor vertical: azul, branco e vermelho"},
-        {"Canadá", "América do Norte", "Inglês e Francês", "Ottawa", "Vermelha com folha de bordo no centro"},
-        {"Egito", "África", "Árabe", "Cairo", "Vermelha, branca e preta com águia de Saladino"}
-    });
+    vector<Pais> paises = carregarPaises();
+    iniciarJogo(paises);
 
     return 0;
 }
